@@ -1,9 +1,9 @@
 {
     "name": "tessi/job-bundle",
     "type": "symfony-bundle",
-    "description": "Bundle providing a task dispatcher, cron powered.",
+    "description": "Bundle providing a cron-powered task dispatcher.",
     "keywords": ["bundle", "scheduler", "job", "task"],
-    "homepage": "https://github.com/vvanghelue/TessiJobBundle",
+    "homepage": "https://github.com/Tessi-Tms/JobBundle",
     "license": "MIT",
     "authors": [
         {
