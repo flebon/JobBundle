@@ -1,5 +1,5 @@
 {
-    "name": "tessi/job-bundle",
+    "name": "tessi-tms/job-bundle",
     "type": "symfony-bundle",
     "description": "Bundle providing a cron-powered task dispatcher.",
     "keywords": ["bundle", "scheduler", "job", "task"],
