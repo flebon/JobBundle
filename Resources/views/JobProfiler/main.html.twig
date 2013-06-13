@@ -1,0 +1,89 @@
+{% extends "JobBundle:JobProfiler:layout.html.twig" %}
+
+{% block content %}
+<h2>Current tasks (-1/+1 hour)</h2>
+<table class="table">
+  <thead>
+    <tr>
+      <th>#</th>
+      <th>Job</th>
+      <th>Execution date</th>
+      <th>Start date</th>
+      <th>End date</th>
+      <th>Status</th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+
+    {% for task in tasks %}
+    <tr 
+
+    {% if task.status == 'Executed' %}
+      class="success">
+    {% endif %}
+
+    {% if task.status == 'Pending' %}
+      class="info">
+    {% endif %}
+
+    {% if task.status == 'Running' %}
+      class="warning">
+    {% endif %}
+
+    {% if task.status == 'Error' %}
+      class="error">
+    {% endif %}
+
+      <td>{{ task.id }}</td>
+      <td>{{ task.job }}</td>
+      <td>{{ task.executionDate }}</td>
+      <td>{{ task.startDate }}</td>
+      <td>
+        {{ task.endDate }}
+        {% if task.isTimedOut %}
+          <i class="icon-warning-sign"></i>
+          <b class="text-error">Timeout reached !</b>
+        {% endif %}
+      </td>
+      <td>
+        {{ task.status }}
+      </td>
+      <td>
+        <a href="{{ path('JobBundle_task_details', {'idTask':task.id}) }}">
+        <button class="btn btn-small" type="button">
+          <i class="icon-plus icon-black"></i>
+          Détails
+        </button>
+        </a>
+        
+        <a href="{{ path('JobBundle_task_delete', {'idTask':task.id}) }}">
+        <button class="btn btn-small" type="button">
+          <i class="icon-remove icon-black"></i>
+          Delete
+        </button>
+        </a>
+        
+        <a href="{{ path('JobBundle_task_reset', {'idTask':task.id}) }}">
+        <button class="btn btn-small" type="button">
+          <i class="icon-play icon-black"></i>
+          Re-execute
+        </button>
+        </a>
+
+      </td>
+    </tr>
+    {% endfor %}
+
+    {% if tasks|length == 0 %}
+      <tr>
+        <td colspan="6" style="text-align:center;">No running tasks yet.</td>
+      </tr>
+    {% endif %}
+
+  </tbody>
+</table>
+<script type="text/javascript">
+setTimeout("location.reload(true);", 20000);
+</script>
+{% endblock %}

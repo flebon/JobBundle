@@ -1,0 +1,55 @@
+ {% extends "JobBundle:JobProfiler:layout.html.twig" %}
+
+{% block content %}
+
+<h2>Jobs</h2>
+<table class="table table-bordered">
+  <thead>
+    <tr>
+      <th>#</th>
+      <th>code</th>
+      <th>Script</th>
+      <th>Time Range</th>
+      <th>Active</th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+  	
+  	{% for job in jobs %}
+    <tr class="{% if job.getIsActive() %}success{% else %}warning{% endif %}">
+      <td>{{ job.getId() }}</td>
+      <td>{{ job.getCode() }}</td>
+      <td>{{ job.getNamespace() }}</td>
+      <td>From {{ job.getStartRangeDate().format('H:i') }} to {{ job.getEndRangeDate().format('H:i') }}</td>
+      <td>
+      	{% if job.getIsActive() %}
+      		<i class="icon-ok-sign icon-black"></i>
+      	{% else %}
+      		<i class="icon-remove-sign icon-black"></i>
+      	{% endif %}
+      </td>
+      <td>
+      	<a href="{{ path('JobBundle_parametrage_edit', {'idJob':job.getId()}) }}">
+        <button class="btn btn-small" type="button">
+          <i class="icon-wrench icon-black"></i>
+          Edit
+        </button>
+   		</a>
+      </td>
+
+    </tr>
+    {% endfor %}
+
+  </tbody>
+</table>
+
+<br />
+
+<a href="{{ path('JobBundle_parametrage_edit', {'idJob':'new'}) }}">
+	<button>
+		<i class="icon-plus"></i>
+		Add new job
+	</button>
+</a>
+{% endblock %}

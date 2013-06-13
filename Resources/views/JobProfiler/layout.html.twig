@@ -1,0 +1,99 @@
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>JobBundle Profiler</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <!-- Le styles -->
+    <link href="{{ asset('bundles/job/css/bootstrap.css') }}" rel="stylesheet">
+    <style>
+      body {
+        padding-top: 60px; /* 60px to make the container go all the way to the bottom of the topbar */
+      }
+    </style>
+    <link href="{{ asset('bundles/job/css/bootstrap-responsive.css') }}" rel="stylesheet">
+
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="{{ asset('bundles/job/js/jquery.min.js') }}"></script>
+    <script src="{{ asset('bundles/job/js/bootstrap.min.js') }}"></script>
+
+    <!-- jquery UI -->
+    <script src="{{ asset('bundles/job/addyosmani-jquery-ui/js/jquery-ui-1.9.2.custom.min.js') }}"></script>
+    <link href="{{ asset('bundles/job/addyosmani-jquery-ui/css/custom-theme/jquery-ui-1.10.0.custom.css') }}" rel="stylesheet">
+
+    <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script src="{{ asset('bundles/job/js/html5shiv.js"') }}'></script>
+    <![endif]-->
+
+    <!-- Fav and touch icons -->
+    <link rel="apple-touch-icon-precomposed" sizes="144x144" href="{{ asset('bundles/job/ico/apple-touch-icon-144-precomposed.png') }}">
+    <link rel="apple-touch-icon-precomposed" sizes="114x114" href="{{ asset('bundles/job/ico/apple-touch-icon-114-precomposed.png') }}">
+    <link rel="apple-touch-icon-precomposed" sizes="72x72" href="{{ asset('bundles/job/ico/apple-touch-icon-72-precomposed.png') }}">
+    <link rel="apple-touch-icon-precomposed" href="{{ asset('bundles/job/ico/apple-touch-icon-57-precomposed.png') }}">
+    <link rel="shortcut icon" href="{{ asset('bundles/job/ico/favicon.png') }}">
+
+    
+
+
+  </head>
+
+  <body>
+
+    <div class="navbar navbar-inverse navbar-fixed-top">
+      <div class="navbar-inner">
+        <div class="container">
+          <button type="button" class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="brand" href="{{ path('JobBundle_main') }}">
+            <img src="{{ asset('bundles/job/img/logo.png') }}" style="margin-top:-5px;opacity:0.6;"/>
+            JobBundle</a>
+          <div class="nav-collapse collapse">
+            <ul class="nav">
+              <!--<li class="active"><a href="#">En cours</a></li>-->
+              <li><a href="{{ path('JobBundle_main') }}">Running tasks</a></li>
+              <!--<li><a href="#about">History</a></li>-->
+              <li><a href="{{ path('JobBundle_parametrage_liste') }}">Jobs</a></li>
+            </ul>
+          </div><!--/.nav-collapse -->
+        </div>
+      </div>
+    </div>
+
+    <div class="container">
+
+      {% if app.session.flashbag is defined %}
+        <!-- flash messages -->
+        {% for flashMessage in app.session.flashbag.get('notice') %}
+        <p class="text-info">{{ flashMessage }}</p>
+        {% endfor %}
+        
+        {% for flashMessage in app.session.flashbag.get('warning') %}
+        <p class="text-warning">{{ flashMessage }}</p>
+        {% endfor %}
+        
+        {% for flashMessage in app.session.flashbag.get('error') %}
+        <p class="text-error">{{ flashMessage }}</p>
+        {% endfor %}
+
+        {% for flashMessage in app.session.flashbag.get('success') %}
+        <p class="text-success">{{ flashMessage }}</p>
+        {% endfor %}
+        
+      {% endif %}
+      <!-- content -->
+      {% block content %}{% endblock %}
+
+    </div> <!-- /container -->
+
+  </body>
+</html>

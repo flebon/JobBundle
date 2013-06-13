@@ -1,0 +1,103 @@
+  {% extends "JobBundle:JobProfiler:layout.html.twig" %}
+
+{% block content %}
+
+<h2>Details task #{{ task.getId() }} 
+	<small>(instance of Job #{{ task.getJob().getCode() }})</small>
+</h2>
+
+<table class="table">
+<!--
+  <thead>
+    <tr>
+      <th>Info</th>
+      <th>Value</th>
+    </tr>
+-->
+  </thead>
+  <tbody>
+  	<tr>
+  		<td class="bold">Status</td>
+  		<td>{{ task.getStatus() }}</td>
+  	</tr>
+  	<tr>
+  		<td class="bold">Job</td>
+  		<td>{{ task.getJob().getCode() }}</td>
+  	</tr>
+  	<tr>
+  		<td class="bold">Execution Date</td>
+  		<td>{{ task.getExecutionDate().format('Y-m-d H:i:s') }}</td>
+  	</tr>
+  	<tr>
+  		<td class="bold">Start Date</td>
+  		{% if  task.getStartDate() %}
+  		<td>{{ task.getStartDate().format('Y-m-d H:i:s') }}</td>
+  		{% else %}
+  		<td>-</td>
+  		{% endif %}
+  	</tr>
+  	<tr>
+  		<td class="bold">End Date</td>
+  		{% if  task.getEndDate() %}
+  		<td>{{ task.getEndDate().format('Y-m-d H:i:s') }}</td>
+  		{% else %}
+  		<td>-</td>
+  		{% endif %}
+  	</tr>
+  	<tr>
+  		<td class="bold">input</td>
+  		<td id="truc">{{ task.getInput()|raw }}</td>
+  	</tr>
+    <tr>
+      <td class="bold">Error message</td>
+      <td id="truc">{{ task.getErrorMessage()|nl2br }}</td>
+    </tr>
+  </tbody>
+<table>
+<style>
+td.bold {
+	font-weight:bold;
+}
+</style>
+<script type="text/javascript">
+$(document).ready(function(){
+
+	/*
+	var test = {{ task.getInput()|raw }};
+	console.log(test);
+	alert(JSON.parse('{"idUtilisateur":3,"params":{"test1":"test","test2":{"test":"mdr","mdr2":["lol","haha"]}}}'));
+
+	// TODO: refaire ce code trop moche..
+	function each(b, indentNum)
+	{
+		var indent = ''
+		for (var i = 0; i < indentNum; i++)
+		{
+			indent += '    ';
+		}
+		document.write('<br />{');
+		$.each
+		(
+			b,
+			function (key, value)
+			{
+	       		if (b.hasOwnProperty(key))
+	        		document.write('<br />' + indent + '    ' + key + ': "' + value + '",');
+	        	// IF TABLEAU OU OBJET
+	        	// each(value, indent + 1);
+			}
+		);
+		document.write('<br />}');
+	}
+	var a = JSON.parse('{{ task.getInput()|raw }}');
+	document.write('<pre>');
+	each(a);
+	document.write('</pre>');
+	*/
+});
+
+
+
+
+</script>
+{% endblock %}
