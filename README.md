@@ -1,5 +1,5 @@
 Installation
-========================
+------------
 
 Add this on your app/config/routing.yml
 
