@@ -1,0 +1,4 @@
+services:
+    job_task_builder:
+       class:        Tessi\JobBundle\Services\TaskBuilder
+       arguments:    [@doctrine]
