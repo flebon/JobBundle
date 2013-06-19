@@ -26,4 +26,27 @@ class TaskRepository extends EntityRepository
 	 
 	    return $qb->getQuery()->getResult();
 	}
+
+	public function hasBeenExecutedToday($jobName)
+	{
+		$dateToday    = new \DateTime("today");
+		$dateTomorrow = new \DateTime("tomorrow");
+
+		var_dump($today, $tomorrow);
+		die;
+		//var_dump($dateTimeOut);
+		//die;
+
+		$qb = $this->_em->createQueryBuilder();
+	    $qb->select('t')
+	        ->from('Tessi\JobBundle\Entity\Task', 't')
+	        ->where('t.job = :taskJob')
+	        ->andWhere('t.startDate IS NOT NULL')
+	        ->andWhere('t.startDate > :dateTimeOut')
+	        ->andWhere('t.endDate IS NULL')
+			->setParameter('taskJob',     $taskJob)
+			->setParameter('dateTimeOut', $dateTimeOut);
+	 
+	    return $qb->getQuery()->getResult();
+	}
 }
