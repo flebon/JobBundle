@@ -37,6 +37,14 @@
         </button>
    		</a>
       </td>
+      <td>
+        <a href="{{ path('JobBundle_job_delete', {'idJob':job.getId()}) }}">
+        <button class="btn btn-small" type="button">
+          <i class="icon-wrench icon-black"></i>
+          Delete
+        </button>
+      </a>
+      </td>
 
     </tr>
     {% endfor %}
