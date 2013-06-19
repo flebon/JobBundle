@@ -27,7 +27,7 @@ class TaskRepository extends EntityRepository
 	    return $qb->getQuery()->getResult();
 	}
 
-	public function hasBeenExecutedToday($jobName)
+	public function hasBeenExecutedToday($jobName, $input = array())
 	{
 		$dateToday    = new \DateTime("today");
 		$dateTomorrow = new \DateTime("tomorrow");
@@ -39,9 +39,11 @@ class TaskRepository extends EntityRepository
 	        ->where('t.job = :job')
 	        ->andWhere('t.executionDate >= :dateToday')
 	        ->andWhere('t.executionDate <  :dateTomorrow')
+	        ->andWhere('t.input = :input')
 			->setParameter('job',      $job)
 			->setParameter('dateToday',    $dateToday)
-			->setParameter('dateTomorrow', $dateTomorrow);
+			->setParameter('dateTomorrow', $dateTomorrow)
+			->setParameter('input', json_encode($input));
 
 	    return count($qb->getQuery()->getResult()) > 0;
 	}
