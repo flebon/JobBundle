@@ -156,14 +156,36 @@ class JobProfilerController extends Controller
                     $em->persist($job);
                     $em->flush();
 
-                    $this->get('session')->setFlash('success', "Opération effectuée");
+                    if(method_exists($this->get('session'), 'setFlash'))
+                        $this->get('session')->setFlash('success', "Opération effectuée");
+                    else
+                        $this->get('session')->getFlashBag()->set('success', "Opération effectuée");
+                    
                     return $this->redirect($this->generateUrl('JobBundle_parametrage_edit', array('idJob' => $job->getId()))); 
                 } catch(\Exception $e) {
-                    $this->get('session')->setFlash('error', "Problème pendant l'opération : " . $e->getMessage());
+                    if(method_exists($this->get('session'), 'setFlash'))
+                        $this->get('session')->setFlash('error', "Problème pendant l'opération : " . $e->getMessage());
+                    else
+                        $this->get('session')->getFlashBag()->set('error', "Problème pendant l'opération : " . $e->getMessage());
                 } 
             }
         }
     
         return array('job' => $job, 'form' => $form->createView());
 	}
+
+    /**
+     * @Route("/jobprofiler/job/{idJob}/delete", name="JobBundle_job_delete")
+     * @Template()
+     */
+    public function jobDeleteAction($idJob)
+    {
+        $em   = $this->getDoctrine()->getEntityManager();
+        $job  = $em->getRepository('JobBundle:Job')->find($idJob);
+        
+        $em->remove($job);
+        $em->flush();
+
+        return $this->redirect($this->generateUrl('JobBundle_parametrage_liste'));
+    }
 }
