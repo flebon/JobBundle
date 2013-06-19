@@ -32,8 +32,6 @@ class TaskRepository extends EntityRepository
 		$dateToday    = new \DateTime("today");
 		$dateTomorrow = new \DateTime("tomorrow");
 
-		var_dump($today, $tomorrow);
-		die;
 		//var_dump($dateTimeOut);
 		//die;
 
@@ -41,12 +39,12 @@ class TaskRepository extends EntityRepository
 	    $qb->select('t')
 	        ->from('Tessi\JobBundle\Entity\Task', 't')
 	        ->where('t.job = :taskJob')
-	        ->andWhere('t.startDate IS NOT NULL')
-	        ->andWhere('t.startDate > :dateTimeOut')
-	        ->andWhere('t.endDate IS NULL')
-			->setParameter('taskJob',     $taskJob)
-			->setParameter('dateTimeOut', $dateTimeOut);
+	        ->andWhere('t.executionDate >= :dateToday')
+	        ->andWhere('t.executionDate <  :dateTomorrow')
+			->setParameter('taskJob',      $jobName)
+			->setParameter('dateToday',    $dateToday)
+			->setParameter('dateTomorrow', $dateTomorrow);
 	 
-	    return $qb->getQuery()->getResult();
+	    return count($qb->getQuery()->getResult()) > 0;
 	}
 }
