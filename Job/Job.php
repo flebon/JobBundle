@@ -20,4 +20,9 @@ abstract class Job extends ContainerAware
 	{
 		
 	}
+	
+	protected function getContainer()
+	{
+		return $this->container;
+	}
 }
