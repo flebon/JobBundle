@@ -12,46 +12,56 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 //Entités
 use Tessi\JobBundle\Entity\Job;
 
+//Filtered Lists
+use Tessi\JobBundle\FilterList\RunningTasks;
+
 
 class JobProfilerController extends Controller
 {
 	
+    /**
+     * @Route("/admin/offres_liste", name="Admin_offres_liste")
+     * @Template()
+     */
+    public function listeAction()
+    {
+        $listeOffre = $this->get('filterlist')
+                           ->setList(new OffreFilterList())
+                           ->getClientList($this->generateUrl('Admin_offres_liste_ajax'));
+
+        return array(
+            'test'        => 'lol',
+            'listeOffres' => $listeOffre
+        );
+    }
+
+
+
 	/**
 	 * @Route("/jobprofiler/main", name="JobBundle_main")
 	 * @Template()
 	 */
 	public function mainAction()
 	{
-    	$em = $this->getDoctrine()->getEntityManager();
+        $tasksList = $this->get('filterlist')
+                   ->setList(new RunningTasks())
+                   ->getClientList($this->generateUrl('JobBundle_main_tasks_list_ajax'));
 
-    	$startDate = new \DateTime('-1 hours');
-    	$endDate   = new \DateTime('+1 hours');
-
-		$currentTasks = $em->getRepository('JobBundle:Task')->createQueryBuilder('t')
-						   ->andWhere('(t.executionDate > :startDate AND t.executionDate < :endDate) OR t.endDate IS NULL OR t.endDate > :startDate')
-						   ->orderBy('t.executionDate', 'DESC')
-						   ->setParameter('startDate', $startDate)
-						   ->setParameter('endDate', $endDate)
-						   ->getQuery()->getResult();
-    	
-    	$tasks = array();
-
-    	foreach($currentTasks as $currentTask) {
-    		$task = array();
-
-    		$task['id']            = $currentTask->getId();
-    		$task['job']           = $currentTask->getJob()->getCode();
-    		$task['executionDate'] = $currentTask->getExecutionDate()->format('Y-m-d H:i:s');
-    		$task['startDate']     = ($currentTask->getStartDate()) ? $currentTask->getStartDate()->format('Y-m-d H:i:s') : null;
-    		$task['endDate']       = ($currentTask->getEndDate()) ? $currentTask->getEndDate()->format('Y-m-d H:i:s') : null;
-    		$task['status']        = $currentTask->getStatus();
-            $task['isTimedOut']    = $currentTask->isTimedOut(new \DateTime('now'));
-
-    		$tasks[] = $task;
-    	}
-
-    	return array('tasks' => $tasks);
+    	return array(
+            'tasksList' => $tasksList
+        );
 	}
+    
+    /**
+     * @Route("/jobprofiler/tasks_list_ajax", name="JobBundle_main_tasks_list_ajax")
+     * @Template()
+     */
+    public function listeAjaxAction()
+    {
+        return $this->get('filterlist')
+                ->setList(new RunningTasks())
+                ->bindAjaxRequest($this->get('request'));
+    }
 
 	/**
 	 * @Route("/jobprofiler/task/{idTask}/details", name="JobBundle_task_details")
@@ -64,40 +74,6 @@ class JobProfilerController extends Controller
 
 		return array('task' => $task, 'input' => json_decode($task->getInput()));
 	}
-
-    /**
-     * @Route("/jobprofiler/task/{idTask}/delete", name="JobBundle_task_delete")
-     * @Template()
-     */
-    public function taskDeleteAction($idTask)
-    {
-        $em   = $this->getDoctrine()->getEntityManager();
-        $task = $em->getRepository('JobBundle:Task')->find($idTask);
-        
-        $em->remove($task);
-        $em->flush();
-
-        return $this->redirect($this->generateUrl('JobBundle_main'));
-    }
-    
-    /**
-     * @Route("/jobprofiler/task/{idTask}/reset", name="JobBundle_task_reset")
-     * @Template()
-     */
-    public function taskResetAction($idTask)
-    {
-        $em   = $this->getDoctrine()->getEntityManager();
-        $task = $em->getRepository('JobBundle:Task')->find($idTask);
-        
-        $task->setStartDate(null);
-        $task->setEndDate(null);
-        $task->setErrorMessage(null);
-        
-        $em->persist($task);
-        $em->flush();
-
-        return $this->redirect($this->generateUrl('JobBundle_main'));
-    }
 
 	/**
 	 * @Route("/jobprofiler/parametrage_list", name="JobBundle_parametrage_liste")
