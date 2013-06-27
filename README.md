@@ -2,6 +2,7 @@ FilterLitstBundle
 =================
 
 Symfony2 bundle generating dynamic filtered (client-side) lists using jQuery.
+
 It is using VVGFilterListBundle : https://github.com/vvanghelue/FilterListBundle
 
 
