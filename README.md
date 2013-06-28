@@ -4,7 +4,7 @@ FilterLitstBundle
 Symfony2 bundle generating dynamic filtered (client-side) lists using jQuery.
 
 
-ONLY WORKS WITH MYSQL
+WORKS ONLY WITH MYSQL
 
 The database could be independant from your application.
 
@@ -100,3 +100,10 @@ And then for your orm mappings :
                     JobBundle: ~
 ```
 
+Usage
+=====
+@TODO
+
+Security
+========
+@TODO
