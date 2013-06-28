@@ -5,6 +5,10 @@ Symfony2 bundle generating dynamic filtered (client-side) lists using jQuery.
 
 It is using VVGFilterListBundle : https://github.com/vvanghelue/FilterListBundle
 
+ONLY WORKS WITH MYSQL
+
+The database could be independant from your application.
+
 
 Installation
 ===========
