@@ -33,7 +33,7 @@ class JobCommand extends ContainerAwareCommand
 		ini_set("memory_limit", -1);
 		
     	$this->findAndExecuteTasks($input, $output);
-    	//$this->createJobTasks($input, $output);
+    	$this->createJobTasks($input, $output);
     }
 
     protected function findAndExecuteTasks(&$input, &$output)
