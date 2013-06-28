@@ -98,6 +98,11 @@ And then for your orm mappings :
                     JobBundle: ~
 ```
 
+Update your schema
+```sh
+php app/console doctrine:schema:update --em=job --force
+```
+
 Usage
 =====
 @TODO
