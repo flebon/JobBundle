@@ -52,7 +52,7 @@ public function registerBundles()
 }
 ```
 
-Edit your doctrine connection in your config.yml:
+Edit your doctrine connection in your `app/config/config.yml`:
 
 ```yaml
 doctrine:
