@@ -59,7 +59,13 @@ class JobCommand extends ContainerAwareCommand
 			LIMIT 1
     	";
 
-        $ids = $conn->fetchAll($sql);
+
+        $tasksIds = $conn->fetchAll($sql);
+
+        $ids = array();
+        foreach($tasksIds as $task) {
+        	$ids[] = $task['id'];
+        }
 
     	if(count($ids) == 0) {
 			$output->writeln('----NO TASKS TO EXECUTE');
