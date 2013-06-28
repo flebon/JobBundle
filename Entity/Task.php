@@ -196,6 +196,13 @@ class Task
     {
         if($this->getErrorMessage())
             return 'Error';
+
+        $timeout     = $this->getJob()->getTaskTimeOut();
+        $dateTimeout = new \DateTime("- $timeout seconds");
+
+        if($this->getStartDate() && !$this->getEndDate() && $this->getStartDate() < $dateTimeout)
+            return 'Timeout';
+
         if($this->getStartDate() && !$this->getEndDate())
             return 'Running';
         if($this->getStartDate() && $this->getEndDate())

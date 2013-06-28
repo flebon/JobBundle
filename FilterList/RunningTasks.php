@@ -56,7 +56,7 @@ class RunningTasks extends FilterListBase
 	
 	public function configureRepository()
 	{
-		$repo = $this->getDoctrine()->getManager()->getRepository('JobBundle:Task');
+		$repo = $this->getDoctrine()->getManager('job')->getRepository('JobBundle:Task');
 		$this->setRepository($repo);
 	}
 	
@@ -210,6 +210,9 @@ class RunningTasks extends FilterListBase
 				case 'Pending':
 					$color = 'orange';
 				break;
+				case 'Timeout':
+					$color = 'red';
+				break;
 			}
 
 			return '<b style="color:'.$color.'">' . $result->getStatus() . '</b>';
@@ -241,8 +244,8 @@ class RunningTasks extends FilterListBase
 	
 	protected function onDelete($entity) {
 
-		$this->getDoctrine()->getManager()->remove($entity);
-		$this->getDoctrine()->getManager()->flush();
+		$this->getDoctrine()->getManager('job')->remove($entity);
+		$this->getDoctrine()->getManager('job')->flush();
 	}
 
 	protected function onReset($entity) {
@@ -251,7 +254,7 @@ class RunningTasks extends FilterListBase
         $entity->setEndDate(null);
         $entity->setErrorMessage(null);
         
-        $this->getDoctrine()->getManager()->persist($entity);
-        $this->getDoctrine()->getManager()->flush();
+        $this->getDoctrine()->getManager('job')->persist($entity);
+        $this->getDoctrine()->getManager('job')->flush();
 	}
 }

@@ -70,6 +70,21 @@ class Job
      */
     private $taskTimeOut;
 
+    /**
+     * @var integer
+     *
+     * @ORM\Column(name="startTaskRestrictionDate", type="datetime", nullable=true)
+     */
+    private $startTaskRestrictionDate;
+
+    /**
+     * @var integer
+     *
+     * @ORM\Column(name="endTaskRestrictionDate", type="datetime", nullable=true)
+     */
+    private $endTaskRestrictionDate;
+
+
     public function __construct()
     {
         $this->setMaxConcurrentTasks(1000);
@@ -245,5 +260,52 @@ class Job
     public function getTaskTimeOut()
     {
         return $this->taskTimeOut;
+    }
+
+    /**
+     * Set startTaskRestrictionDate
+     *
+     * @param integer $startTaskRestrictionDate
+     * @return Job
+     */
+    public function setStartTaskRestrictionDate($startTaskRestrictionDate)
+    {
+        $this->startTaskRestrictionDate = $startTaskRestrictionDate;
+    
+        return $this;
+    }
+
+    /**
+     * Get startTaskRestrictionDate
+     *
+     * @return integer 
+     */
+    public function getStartTaskRestrictionDate()
+    {
+        return $this->startTaskRestrictionDate;
+    }
+
+
+    /**
+     * Set startTaskRestrictionDate
+     *
+     * @param integer $endTaskRestrictionDate
+     * @return Job
+     */
+    public function setEndTaskRestrictionDate($endTaskRestrictionDate)
+    {
+        $this->endTaskRestrictionDate = $endTaskRestrictionDate;
+    
+        return $this;
+    }
+
+    /**
+     * Get endTaskRestrictionDate
+     *
+     * @return integer 
+     */
+    public function getEndTaskRestrictionDate()
+    {
+        return $this->endTaskRestrictionDate;
     }
 }

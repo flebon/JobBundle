@@ -14,7 +14,7 @@ use Tessi\JobBundle\Entity\Job;
 
 //Filtered Lists
 use Tessi\JobBundle\FilterList\RunningTasks;
-
+use Tessi\JobBundle\FilterList\JobsList;
 
 class JobProfilerController extends Controller
 {
@@ -30,7 +30,6 @@ class JobProfilerController extends Controller
                            ->getClientList($this->generateUrl('Admin_offres_liste_ajax'));
 
         return array(
-            'test'        => 'lol',
             'listeOffres' => $listeOffre
         );
     }
@@ -69,7 +68,7 @@ class JobProfilerController extends Controller
 	 */
 	public function taskDetailsAction($idTask)
 	{
-        $em   = $this->getDoctrine()->getEntityManager();
+        $em   = $this->getDoctrine()->getEntityManager('job');
 		$task = $em->getRepository('JobBundle:Task')->find($idTask);
 
 		return array('task' => $task, 'input' => json_decode($task->getInput()));
@@ -81,11 +80,25 @@ class JobProfilerController extends Controller
 	 */
 	public function parametrageListeAction()
 	{
-    	$em   = $this->getDoctrine()->getEntityManager();
-		$jobs = $em->getRepository('JobBundle:Job')->findAll();
-    	
-    	return array('jobs' => $jobs);
+        $jobList = $this->get('filterlist')
+                   ->setList(new JobsList())
+                   ->getClientList($this->generateUrl('JobBundle_job_list_ajax'));
+
+        return array(
+            'jobList' => $jobList
+        );
 	}
+
+    /**
+     * @Route("/jobprofiler/tasks_list_job_ajax", name="JobBundle_job_list_ajax")
+     * @Template()
+     */
+    public function listeJobAjaxAction()
+    {
+        return $this->get('filterlist')
+                ->setList(new JobsList())
+                ->bindAjaxRequest($this->get('request'));
+    }
 
 	/**
 	 * @Route("/jobprofiler/parametrage/{idJob}", name="JobBundle_parametrage_edit")
@@ -93,7 +106,7 @@ class JobProfilerController extends Controller
 	 */
 	public function parametrageEditAction($idJob)
 	{
-        $em = $this->getDoctrine()->getEntityManager();
+        $em = $this->getDoctrine()->getEntityManager('job');
 
         if($idJob == 'new') {
             $job = new Job();
@@ -106,8 +119,12 @@ class JobProfilerController extends Controller
         $form = $this->createFormBuilder($job)
             ->add('code',               'text',     array('label' => "Code"))
             ->add('namespace',          'text',     array('label' => "Script (namespace)"))
-            ->add('startRangeDate',     'time',     array('label' => "Range start"))
-            ->add('endRangeDate',       'time',     array('label' => "Range end"))
+            ->add('startRangeDate',     'time',     array('label' => "Range start (launch)"))
+            ->add('endRangeDate',       'time',     array('label' => "Range end (launch)"))
+
+            ->add('startTaskRestrictionDate', 'time', array('label' => "Task execution range"))
+            ->add('endTaskRestrictionDate',   'time', array('label' => "Task execution range"))
+
             ->add('isActive',           'checkbox', array('label' => "Active ?", 'required' => false))
             ->add('maxConcurrentTasks', 'text',     array('label' => "Max concurrent tasks"))
             ->add('taskTimeOut',        'text',     array('label' => "Single task timeout"))
@@ -156,7 +173,7 @@ class JobProfilerController extends Controller
      */
     public function jobDeleteAction($idJob)
     {
-        $em   = $this->getDoctrine()->getEntityManager();
+        $em   = $this->getDoctrine()->getEntityManager('job');
         $job  = $em->getRepository('JobBundle:Job')->find($idJob);
         
         $em->remove($job);

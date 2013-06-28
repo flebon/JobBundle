@@ -21,7 +21,7 @@ class TaskBuilder
      */
     public function createTask($jobCode, \DateTime $executionDate, $input = array())
     {
-        $em = $this->getDoctrine()->getEntityManager();
+        $em = $this->getDoctrine()->getEntityManager('job');
         
         $job = $em->getRepository('JobBundle:Job')->findOneBy(array('code' => $jobCode));
         if(!$job)

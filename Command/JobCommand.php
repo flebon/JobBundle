@@ -33,29 +33,47 @@ class JobCommand extends ContainerAwareCommand
 		ini_set("memory_limit", -1);
 		
     	$this->findAndExecuteTasks($input, $output);
-    	$this->createJobTasks($input, $output);
+    	//$this->createJobTasks($input, $output);
     }
 
     protected function findAndExecuteTasks(&$input, &$output)
     {
-		$em = $this->getContainer()->get('doctrine')->getEntityManager();
-    	
+		$em   = $this->getContainer()->get('doctrine')->getEntityManager('job');
+		$conn = $this->getContainer()->get('doctrine.dbal.job_connection');
+		$time = date('1970-01-01 H:i:s');
+    	$sql  = "
+			SELECT t.id FROM jobbundletask t
+			INNER JOIN jobbundlejob j ON j.id = t.job_id
+			WHERE t.startdate is null AND t.enddate IS NULL
+			AND  (
+					SELECT count(*) FROM jobbundletask rt 
+					WHERE rt.job_id = t.job_id 
+					AND (rt.startdate IS NOT NULL AND rt.startdate >= DATE_SUB(NOW(),INTERVAL j.taskTimeOut SECOND))
+					AND rt.enddate IS NULL
+				  ) < j.maxconcurrenttasks
+
+			AND j.startTaskRestrictionDate < '$time'
+			AND j.endTaskRestrictionDate   > '$time'
+
+			ORDER BY t.executiondate ASC
+			LIMIT 1
+    	";
+
+        $ids = $conn->fetchAll($sql);
+
+    	if(count($ids) == 0) {
+			$output->writeln('----NO TASKS TO EXECUTE');
+			return;
+		}
+
     	//Lock table to prevent task doudle execution
 		//$em->getConnection()->exec('LOCK TABLES _jobbundle_task AS _0_ READ;');
 
     	//On cherche les taches à executer
     	$foundTasks = $em->getRepository('JobBundle:Task')->createQueryBuilder('t')
-							->andWhere('t.startDate IS NULL')
-							->andWhere('t.executionDate < :currentDate')
-							->setParameter('currentDate', new \DateTime('now'))
-							->orderBy('t.executionDate', 'ASC')
-							//->setMaxResults(1)
+							->andWhere('t.id IN (:ids)')
+              				->setParameter('ids', $ids)
 							->getQuery()->getResult();
-
-		//var_dump(count($foundTasks));
-
-		if(!$foundTasks)
-			return;
 
 		$taskToExecute = array();
 
@@ -64,10 +82,10 @@ class JobCommand extends ContainerAwareCommand
 
     	//Lock task for other executions
 		foreach($foundTasks as $task) {
-			$allRunningSisterTasks = $em->getRepository('JobBundle:Task')->getAllActiveSisterTasks($task->getJob());
+			//$allRunningSisterTasks = $em->getRepository('JobBundle:Task')->getAllActiveSisterTasks($task->getJob());
 
 			//If task is executable (concurrency)
-			if(count($allRunningSisterTasks) < $task->getJob()->getMaxConcurrentTasks()) {
+			//if(count($allRunningSisterTasks) < $task->getJob()->getMaxConcurrentTasks()) {
 				$taskToExecute[] = $task;
 				$task->setStartDate($startDate);
 				$em->persist($task);
@@ -75,11 +93,8 @@ class JobCommand extends ContainerAwareCommand
 				//On n'en prends qu'une
 				if(count($taskToExecute) >= self::MAX_TASK_PROCESS)
 					break;
-			}
+			//}
 		}
-
-		//var_dump(count($taskToExecute));
-		//die;
 
 		$em->flush();
 
@@ -113,13 +128,13 @@ class JobCommand extends ContainerAwareCommand
 		
 		$endDate = new \DateTime('now');
 		
-		$output->writeln('----FIN EXECUTION DE ' . count($taskToExecute) . ' TACHE(S) [' . $endDate->format('Y-m-d H:i:s') . ']');
+		$output->writeln('----END OF EXECUTION OF ' . count($taskToExecute) . ' TASK(S) [' . $endDate->format('Y-m-d H:i:s') . ']');
 	
     }
 
 	protected function createJobTasks(&$input, &$output)
 	{
-		$em = $this->getContainer()->get('doctrine')->getEntityManager();
+		$em = $this->getContainer()->get('doctrine')->getEntityManager('job');
     	
     	$currentTime = new \DateTime(date('1970-01-01 H:i:s'));
     	
