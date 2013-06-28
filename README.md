@@ -42,3 +42,52 @@ public function registerBundles()
     );
 }
 ```
+
+Edit your doctrine connection in your config.yml:
+
+```yaml
+doctrine:
+    dbal:
+        default_connection:   default
+        connections:
+            default:
+                driver:   "%database_driver%"
+                host:     "%database_host%"
+                port:     "%database_port%"
+                dbname:   "%database_name%"
+                user:     "%database_user%"
+                password: "%database_password%"
+                charset:  UTF8
+            
+            ...
+            
+            #Put your job database config here
+            job:
+                driver:   "%database_driver%"
+                host:     "%database_host%"
+                port:     "%database_port%"
+                dbname:   "%database_name%"
+                user:     "%database_user%"
+                password: "%database_password%"
+                charset:  UTF8
+```
+
+Edit your doctrine orm mappings in your config.yml:
+
+```yaml
+    orm:
+        default_entity_manager:   default
+        entity_managers:
+            default:
+                connection:       default
+                mappings: ~
+                
+            ...
+            
+            #Declare your entity manager
+            job:
+                connection:       job
+                mappings:
+                    JobBundle: ~
+```
+
