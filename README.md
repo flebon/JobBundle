@@ -3,12 +3,17 @@ FilterLitstBundle
 
 Symfony2 bundle generating dynamic filtered (client-side) lists using jQuery.
 
-It is using VVGFilterListBundle : https://github.com/vvanghelue/FilterListBundle
 
 ONLY WORKS WITH MYSQL
 
 The database could be independant from your application.
 
+
+Dependencies
+============
+
+VVGFilterListBundle : https://github.com/vvanghelue/FilterListBundle,
+Doctrine
 
 Installation
 ===========
@@ -76,7 +81,7 @@ doctrine:
                 charset:  UTF8
 ```
 
-Edit your doctrine orm mappings in your config.yml:
+And then for your orm mappings :
 
 ```yaml
     orm:
