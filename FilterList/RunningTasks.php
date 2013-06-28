@@ -56,7 +56,7 @@ class RunningTasks extends FilterListBase
 	
 	public function configureRepository()
 	{
-		$repo = $this->getDoctrine()->getManager('job')->getRepository('JobBundle:Task');
+		$repo = $this->getDoctrine()->getEntityManager('job')->getRepository('JobBundle:Task');
 		$this->setRepository($repo);
 	}
 	
@@ -244,17 +244,17 @@ class RunningTasks extends FilterListBase
 	
 	protected function onDelete($entity) {
 
-		$this->getDoctrine()->getManager('job')->remove($entity);
-		$this->getDoctrine()->getManager('job')->flush();
+		$this->getDoctrine()->getEntityManager('job')->remove($entity);
+		$this->getDoctrine()->getEntityManager('job')->flush();
 	}
 
 	protected function onReset($entity) {
 
-		$entity->setStartDate(null);
-        $entity->setEndDate(null);
-        $entity->setErrorMessage(null);
+            $entity->setStartDate(null);
+            $entity->setEndDate(null);
+            $entity->setErrorMessage(null);
         
-        $this->getDoctrine()->getManager('job')->persist($entity);
-        $this->getDoctrine()->getManager('job')->flush();
+            $this->getDoctrine()->getEntityManager('job')->persist($entity);
+            $this->getDoctrine()->getEntityManager('job')->flush();
 	}
 }
