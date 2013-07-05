@@ -84,6 +84,13 @@ class Job
      */
     private $endTaskRestrictionDate;
 
+    /**
+     * @var integer
+     *
+     * @ORM\Column(name="currentRunningCount", type="integer")
+     */
+    public $currentRunningCount;
+
 
     public function __construct()
     {
@@ -109,7 +116,7 @@ class Job
      */
     public function setCode($code)
     {
-        $this->code = $code;
+        $thiscode = $code;
     
         return $this;
     }
@@ -307,5 +314,53 @@ class Job
     public function getEndTaskRestrictionDate()
     {
         return $this->endTaskRestrictionDate;
+    }
+
+    /**
+     * Set currentRunningCount
+     *
+     * @param integer $currentRunningCount
+     * @return Job
+     */
+    public function setCurrentRunningCount($currentRunningCount)
+    {
+        $this->currentRunningCount = $currentRunningCount;
+    
+        return $this;
+    }
+
+    /**
+     * Get currentRunningCount
+     *
+     * @return integer 
+     */
+    public function getCurrentRunningCount()
+    {
+        return $this->currentRunningCount;
+    }
+
+    /**
+     * Get id
+     *
+     * @return integer
+     */
+    public function incrementRunningCount()
+    {
+        $this->currentRunningCount = $this->currentRunningCount + 1;
+
+        return $this;
+    }
+
+    /**
+     * Set code
+     *
+     * @param string $code
+     * @return Job
+     */
+    public function decrementRunningCount()
+    {
+        $this->currentRunningCount = $this->currentRunningCount - 1;
+
+        return $this;
     }
 }
