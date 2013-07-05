@@ -33,32 +33,26 @@ class JobCommand extends ContainerAwareCommand
 		ini_set("memory_limit", -1);
 		
     	$this->findAndExecuteTasks($input, $output);
-    	$this->createJobTasks($input, $output);
+    	//$this->createJobTasks($input, $output);
     }
 
     protected function findAndExecuteTasks(&$input, &$output)
     {
-		$em   = $this->getContainer()->get('doctrine')->getEntityManager('job');
-		$conn = $this->getContainer()->get('doctrine.dbal.job_connection');
-		$time = date('1970-01-01 H:i:s');
-    	$sql  = "
+		$em    = $this->getContainer()->get('doctrine')->getEntityManager('job');
+		$conn  = $this->getContainer()->get('doctrine.dbal.job_connection');
+		$limit = self::MAX_TASK_PROCESS;
+		$time  = date('1970-01-01 H:i:s');
+    	$sql   = "
 			SELECT t.id FROM jobbundletask t
 			INNER JOIN jobbundlejob j ON j.id = t.job_id
 			WHERE t.startdate is null AND t.enddate IS NULL
-			AND  (
-					SELECT count(*) FROM jobbundletask rt 
-					WHERE rt.job_id = t.job_id 
-					AND (rt.startdate IS NOT NULL AND rt.startdate >= DATE_SUB(NOW(),INTERVAL j.taskTimeOut SECOND))
-					AND rt.enddate IS NULL
-				  ) < j.maxconcurrenttasks
-
+			AND j.currentRunningCount < j.maxconcurrenttasks
 			AND j.startTaskRestrictionDate < '$time'
 			AND j.endTaskRestrictionDate   > '$time'
 
 			ORDER BY t.executiondate ASC
-			LIMIT 1
+			LIMIT $limit
     	";
-
 
         $tasksIds = $conn->fetchAll($sql);
 
@@ -66,6 +60,7 @@ class JobCommand extends ContainerAwareCommand
         foreach($tasksIds as $task) {
         	$ids[] = $task['id'];
         }
+
 
     	if(count($ids) == 0) {
 			$output->writeln('----NO TASKS TO EXECUTE');
@@ -85,24 +80,20 @@ class JobCommand extends ContainerAwareCommand
 
 		$startDate = new \DateTime('now');
 
-
+        //$em->clear();
     	//Lock task for other executions
 		foreach($foundTasks as $task) {
-			//$allRunningSisterTasks = $em->getRepository('JobBundle:Task')->getAllActiveSisterTasks($task->getJob());
+			$taskToExecute[] = $task;
+			$task->setStartDate($startDate);
+            $job = $task->getJob();
 
-			//If task is executable (concurrency)
-			//if(count($allRunningSisterTasks) < $task->getJob()->getMaxConcurrentTasks()) {
-				$taskToExecute[] = $task;
-				$task->setStartDate($startDate);
-				$em->persist($task);
+            $job->incrementRunningCount();
+            $em->persist($job);
 
-				//On n'en prends qu'une
-				if(count($taskToExecute) >= self::MAX_TASK_PROCESS)
-					break;
-			//}
+			$em->persist($task);
+			$em->flush();
 		}
 
-		$em->flush();
 
 		//Unlock table
 		//$em->getConnection()->exec('UNLOCK TABLES;');
@@ -128,6 +119,11 @@ class JobCommand extends ContainerAwareCommand
 			}
 
 			$task->setEndDate(new \DateTime('now'));
+			$job = $task->getJob();
+
+            $job->decrementRunningCount();
+            $em->persist($job);
+
 			$em->persist($task);
 			$em->flush();
 		}
