@@ -103,6 +103,23 @@ Update your schema
 php app/console doctrine:schema:update --em=job --force
 ```
 
+Crontab
+=======
+```sh
+* * * * * echo "cron 0"; /home/dev/workspace/YourProject/app/console job:run >> /var/log/cron_your_project.log
+* * * * * sleep 5; echo "cron 5"; /home/dev/workspace/YourProject/app/console job:run >> /var/log/cron_your_project.log
+* * * * * sleep 10; echo "cron 10"; /home/dev/workspace/YourProject/app/console job:run >> /var/log/cron_your_project.log
+* * * * * sleep 15; echo "cron 15"; /home/dev/workspace/YourProject/app/console job:run >> /var/log/cron_your_project.log
+* * * * * sleep 20; echo "cron 20"; /home/dev/workspace/YourProject/app/console job:run >> /var/log/cron_your_project.log
+* * * * * sleep 25; echo "cron 25"; /home/dev/workspace/YourProject/app/console job:run >> /var/log/cron_your_project.log
+* * * * * sleep 30; echo "cron 30"; /home/dev/workspace/YourProject/app/console job:run >> /var/log/cron_your_project.log
+* * * * * sleep 35; echo "cron 35"; /home/dev/workspace/YourProject/app/console job:run >> /var/log/cron_your_project.log
+* * * * * sleep 40; echo "cron 40"; /home/dev/workspace/YourProject/app/console job:run >> /var/log/cron_your_project.log
+* * * * * sleep 45; echo "cron 45"; /home/dev/workspace/YourProject/app/console job:run >> /var/log/cron_your_project.log
+* * * * * sleep 50; echo "cron 50"; /home/dev/workspace/YourProject/app/console job:run >> /var/log/cron_your_project.log
+* * * * * sleep 55; echo "cron 55"; /home/dev/workspace/YourProject/app/console job:run >> /var/log/cron_your_project.log
+```
+
 Usage
 =====
 @TODO
