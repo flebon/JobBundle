@@ -86,7 +86,7 @@ class JobsList extends FilterListBase
 	
 	public function configureRepository()
 	{
-		$repo = $this->getDoctrine()->getEntityManager('job')->getRepository('JobBundle:Job');
+		$repo = $this->getDoctrine()->getManager('job')->getRepository('JobBundle:Job');
 		$this->setRepository($repo);
 	}
 	
@@ -218,7 +218,7 @@ class JobsList extends FilterListBase
 	
 	protected function onDelete($entity) {
 
-		$this->getDoctrine()->getEntityManager('job')->remove($entity);
-		$this->getDoctrine()->getEntityManager('job')->flush();
+		$this->getDoctrine()->getManager('job')->remove($entity);
+		$this->getDoctrine()->getManager('job')->flush();
 	}
 }

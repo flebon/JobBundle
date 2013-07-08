@@ -56,7 +56,7 @@ class RunningTasks extends FilterListBase
 	
 	public function configureRepository()
 	{
-		$repo = $this->getDoctrine()->getEntityManager('job')->getRepository('JobBundle:Task');
+		$repo = $this->getDoctrine()->getManager('job')->getRepository('JobBundle:Task');
 		$this->setRepository($repo);
 	}
 	
@@ -108,13 +108,14 @@ class RunningTasks extends FilterListBase
 			$now = new \DateTime('-5 seconds');
 			switch($fieldValue) {
 				case 'Error':
-					$this->getQueryBuilder()->andWhere("t.errorMessage LIKE '%". $fieldValue ."%'");
-					$this->getQueryBuilder()->andWhere("t.endDate IS NOT NULL");
+					$this->getQueryBuilder()->andWhere("t.errorMessage IS NOT NULL");
+					//$this->getQueryBuilder()->andWhere("t.endDate IS NOT NULL");
 				break;
 				case 'Running':
 					$this->getQueryBuilder()->andWhere("t.startDate IS NOT NULL");
-					$this->getQueryBuilder()->andWhere("t.endDate > :now");
-					$this->getQueryBuilder()->setParameter('now', $now);
+					$this->getQueryBuilder()->andWhere("t.endDate IS NULL");
+					//$this->getQueryBuilder()->andWhere("t.endDate > :now");
+					//$this->getQueryBuilder()->setParameter('now', $now);
 				break;
 				case 'Executed':
 					$this->getQueryBuilder()->andWhere("t.startDate IS NOT NULL");
@@ -123,6 +124,10 @@ class RunningTasks extends FilterListBase
 				case 'Pending':
 					$this->getQueryBuilder()->andWhere("t.startDate IS NULL");
 					$this->getQueryBuilder()->andWhere("t.endDate IS NULL");
+				break;
+				case 'Timeout':
+					//$this->getQueryBuilder()->andWhere("t.startDate <  DATE_SUB("..", INTERVAL j.taskTimeOut SECOND) ");
+					//$this->getQueryBuilder()->andWhere("t.endDate IS NULL");
 				break;
 			}
 			//@TODO
@@ -244,17 +249,17 @@ class RunningTasks extends FilterListBase
 	
 	protected function onDelete($entity) {
 
-		$this->getDoctrine()->getEntityManager('job')->remove($entity);
-		$this->getDoctrine()->getEntityManager('job')->flush();
+		$this->getDoctrine()->getManager('job')->remove($entity);
+		$this->getDoctrine()->getManager('job')->flush();
 	}
 
 	protected function onReset($entity) {
 
-            $entity->setStartDate(null);
-            $entity->setEndDate(null);
-            $entity->setErrorMessage(null);
+		$entity->setStartDate(null);
+        $entity->setEndDate(null);
+        $entity->setErrorMessage(null);
         
-            $this->getDoctrine()->getEntityManager('job')->persist($entity);
-            $this->getDoctrine()->getEntityManager('job')->flush();
+        $this->getDoctrine()->getManager('job')->persist($entity);
+        $this->getDoctrine()->getManager('job')->flush();
 	}
 }

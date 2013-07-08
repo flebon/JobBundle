@@ -15,6 +15,7 @@ use Tessi\JobBundle\Entity\Job;
 //Filtered Lists
 use Tessi\JobBundle\FilterList\RunningTasks;
 use Tessi\JobBundle\FilterList\JobsList;
+use Tessi\JobBundle\FilterList\TasksHistory;
 
 class JobProfilerController extends Controller
 {
@@ -34,8 +35,6 @@ class JobProfilerController extends Controller
         );
     }
 
-
-
 	/**
 	 * @Route("/jobprofiler/main", name="JobBundle_main")
 	 * @Template()
@@ -51,6 +50,32 @@ class JobProfilerController extends Controller
         );
 	}
     
+    /**
+     * @Route("/jobprofiler/history", name="JobBundle_history")
+     * @Template()
+     */
+    public function historyAction()
+    {
+        $tasksHistoryList = $this->get('filterlist')
+                   ->setList(new TasksHistory())
+                   ->getClientList($this->generateUrl('JobBundle_main_tasks_history_list_ajax'));
+
+        return array(
+            'tasksHistoryList' => $tasksHistoryList
+        );
+    }
+
+    /**
+     * @Route("/jobprofiler/tasks_history_list_ajax", name="JobBundle_main_tasks_history_list_ajax")
+     * @Template()
+     */
+    public function listeHistoryAjaxAction()
+    {
+        return $this->get('filterlist')
+                ->setList(new TasksHistory())
+                ->bindAjaxRequest($this->get('request'));
+    }
+
     /**
      * @Route("/jobprofiler/tasks_list_ajax", name="JobBundle_main_tasks_list_ajax")
      * @Template()

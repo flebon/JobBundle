@@ -33,7 +33,7 @@ class JobCommand extends ContainerAwareCommand
 		ini_set("memory_limit", -1);
 		
     	$this->findAndExecuteTasks($input, $output);
-    	//$this->createJobTasks($input, $output);
+    	$this->createJobTasks($input, $output);
     }
 
     protected function findAndExecuteTasks(&$input, &$output)
@@ -127,7 +127,6 @@ class JobCommand extends ContainerAwareCommand
 			$em->persist($task);
 			$em->flush();
 		}
-		
 		$endDate = new \DateTime('now');
 		
 		$output->writeln('----END OF EXECUTION OF ' . count($taskToExecute) . ' TASK(S) [' . $endDate->format('Y-m-d H:i:s') . ']');

@@ -1,0 +1,8 @@
+{% extends "JobBundle:JobProfiler:layout.html.twig" %}
+
+{% block content %}
+
+<h2>History</h2>
+  {% include 'VVGFilterListBundle::list.html.twig' with {'data': tasksHistoryList, 'listName' : 'HistoryList'} %}
+
+{% endblock %}
