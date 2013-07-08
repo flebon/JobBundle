@@ -87,7 +87,7 @@ class JobCommand extends ContainerAwareCommand
 			$task->setStartDate($startDate);
             $job = $task->getJob();
 
-            $job->incrementRunningCount();
+            $this->incrementJobRunning($job);
             $em->persist($job);
 
 			$em->persist($task);
@@ -121,7 +121,7 @@ class JobCommand extends ContainerAwareCommand
 			$task->setEndDate(new \DateTime('now'));
 			$job = $task->getJob();
 
-            $job->decrementRunningCount();
+            $this->decrementJobRunning($job);
             $em->persist($job);
 
 			$em->persist($task);
@@ -188,6 +188,22 @@ class JobCommand extends ContainerAwareCommand
 		$script = new $scriptNamespace($this->getContainer());
 		$input  =  (array) json_decode($task->getInput());
 		$script->executeTask($input);
+	}
+
+	protected function incrementJobRunning($job)
+	{
+		$conn = $this->getContainer()->get('doctrine.dbal.job_connection');
+		$id   = $job->getId();
+    	$sql  = "UPDATE jobbundlejob SET currentRunningCount = currentRunningCount + 1 WHERE id = $id";
+    	$conn->query($sql);
+	}
+
+	protected function decrementJobRunning($job)
+	{
+		$conn = $this->getContainer()->get('doctrine.dbal.job_connection');
+		$id   = $job->getId();
+    	$sql  = "UPDATE jobbundlejob SET currentRunningCount = currentRunningCount - 1 WHERE id = $id";
+    	$conn->query($sql);
 	}
 }
 
