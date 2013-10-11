@@ -13,7 +13,9 @@ use Tessi\JobBundle\Entity\Job;
 class JobCommand extends ContainerAwareCommand
 {
 	const MAX_TASK_PROCESS = 1;
-
+   /**
+    * function
+    */
     protected function configure()
     {
         $this
