@@ -24,7 +24,7 @@ class Task
     /**
      * @var string
      *
-     * @ORM\ManyToOne(targetEntity="Job")
+     * @ORM\OneToOne(targetEntity="Job")
      */
     private $job;
 
@@ -67,7 +67,7 @@ class Task
     /**
      * Get id
      *
-     * @return integer 
+     * @return integer
      */
     public function getId()
     {
@@ -83,14 +83,14 @@ class Task
     public function setInput($input)
     {
         $this->input = $input;
-    
+
         return $this;
     }
 
     /**
      * Get input
      *
-     * @return string 
+     * @return string
      */
     public function getInput()
     {
@@ -106,14 +106,14 @@ class Task
     public function setExecutionDate($executionDate)
     {
         $this->executionDate = $executionDate;
-    
+
         return $this;
     }
 
     /**
      * Get executionDate
      *
-     * @return \DateTime 
+     * @return \DateTime
      */
     public function getExecutionDate()
     {
@@ -129,14 +129,14 @@ class Task
     public function setStartDate($startDate)
     {
         $this->startDate = $startDate;
-    
+
         return $this;
     }
 
     /**
      * Get startDate
      *
-     * @return \DateTime 
+     * @return \DateTime
      */
     public function getStartDate()
     {
@@ -152,14 +152,14 @@ class Task
     public function setEndDate($endDate)
     {
         $this->endDate = $endDate;
-    
+
         return $this;
     }
 
     /**
      * Get endDate
      *
-     * @return \DateTime 
+     * @return \DateTime
      */
     public function getEndDate()
     {
@@ -175,14 +175,14 @@ class Task
     public function setJob(\Tessi\JobBundle\Entity\Job $job = null)
     {
         $this->job = $job;
-    
+
         return $this;
     }
 
     /**
      * Get job
      *
-     * @return \Tessi\JobBundle\Entity\Job 
+     * @return \Tessi\JobBundle\Entity\Job
      */
     public function getJob()
     {
@@ -220,14 +220,14 @@ class Task
     public function setErrorMessage($errorMessage)
     {
         $this->errorMessage = $errorMessage;
-    
+
         return $this;
     }
 
     /**
      * Get errorMessage
      *
-     * @return string 
+     * @return string
      */
     public function getErrorMessage()
     {
@@ -237,18 +237,18 @@ class Task
     /**
      * Get if running task is timed out
      *
-     * @return boolean 
+     * @return boolean
      */
     public function isTimedOut($date)
     {
         $timedOut = false;
         if($this->getStartDate() && is_null($this->getEndDate())) {
             $currentDate = new \DateTime('now');
-            $timedOut    = ($date->getTimeStamp() 
-                                    - $this->getStartDate()->getTimeStamp()) 
+            $timedOut    = ($date->getTimeStamp()
+                                    - $this->getStartDate()->getTimeStamp())
                                 > $this->getJob()->getTaskTimeOut();
         }
-        
+
         return $timedOut;
     }
 }

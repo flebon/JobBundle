@@ -19,7 +19,7 @@ use Tessi\JobBundle\FilterList\TasksHistory;
 
 class JobProfilerController extends Controller
 {
-	
+
     /**
      * @Route("/admin/offres_liste", name="Admin_offres_liste")
      * @Template()
@@ -49,7 +49,7 @@ class JobProfilerController extends Controller
             'tasksList' => $tasksList
         );
 	}
-    
+
     /**
      * @Route("/jobprofiler/history", name="JobBundle_history")
      * @Template()
@@ -178,17 +178,17 @@ class JobProfilerController extends Controller
                         $this->get('session')->setFlash('success', "Opération effectuée");
                     else
                         $this->get('session')->getFlashBag()->set('success', "Opération effectuée");
-                    
-                    return $this->redirect($this->generateUrl('JobBundle_parametrage_edit', array('idJob' => $job->getId()))); 
+
+                    return $this->redirect($this->generateUrl('JobBundle_parametrage_edit', array('idJob' => $job->getId())));
                 } catch(\Exception $e) {
                     if(method_exists($this->get('session'), 'setFlash'))
                         $this->get('session')->setFlash('error', "Problème pendant l'opération : " . $e->getMessage());
                     else
                         $this->get('session')->getFlashBag()->set('error', "Problème pendant l'opération : " . $e->getMessage());
-                } 
+                }
             }
         }
-    
+
         return array('job' => $job, 'form' => $form->createView());
 	}
 
@@ -200,7 +200,7 @@ class JobProfilerController extends Controller
     {
         $em   = $this->getDoctrine()->getEntityManager('job');
         $job  = $em->getRepository('JobBundle:Job')->find($idJob);
-        
+
         $em->remove($job);
         $em->flush();
 

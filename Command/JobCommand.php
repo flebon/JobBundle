@@ -33,7 +33,7 @@ class JobCommand extends ContainerAwareCommand
     {
     	set_time_limit(0);
 		ini_set("memory_limit", -1);
-		
+
     	$this->findAndExecuteTasks($input, $output);
     	$this->createJobTasks($input, $output);
     }
@@ -44,14 +44,23 @@ class JobCommand extends ContainerAwareCommand
 		$conn  = $this->getContainer()->get('doctrine.dbal.job_connection');
 		$limit = self::MAX_TASK_PROCESS;
 		$time  = date('1970-01-01 H:i:s');
-    	$sql   = "
+    	$sql = "
 			SELECT t.id FROM jobbundletask t
 			INNER JOIN jobbundlejob j ON j.id = t.job_id
 			WHERE t.startdate is null AND t.enddate IS NULL
 			AND j.currentRunningCount < j.maxconcurrenttasks
-			AND j.startTaskRestrictionDate < '$time'
-			AND j.endTaskRestrictionDate   > '$time'
-
+			AND (
+					(
+						j.endTaskRestrictionDate > j.startTaskRestrictionDate
+					AND j.startTaskRestrictionDate < '$time'
+					AND j.endTaskRestrictionDate   > '$time'
+					)
+				OR 	(
+						j.endTaskRestrictionDate < j.startTaskRestrictionDate
+					AND NOT (	j.startTaskRestrictionDate < '$time'
+							AND j.endTaskRestrictionDate   > '$time')
+					)
+				)
 			ORDER BY t.executiondate ASC
 			LIMIT $limit
     	";
@@ -102,20 +111,20 @@ class JobCommand extends ContainerAwareCommand
 
 		$output->writeln('-------------------------------------------');
 		$output->writeln('----EXECUTION STARTING ON ' . count($taskToExecute) . ' TASK(S) [' . $startDate->format('Y-m-d H:i:s') . ']');
-		
+
 		foreach($taskToExecute as $task) {
 
 			try {
 				$output->writeln('--------Execution of task #' . $task->getId());
 				$this->executeTache($task, $output);
 			} catch(\Exception $e) {
-				
+
 				//throw $e;
 
 				$output->writeln('--------ERROR (catched Exception) ON TASK #' . $task->getId());
-				$task->setErrorMessage(	$e->getMessage() . chr(10) 
-										. ' IN ' .      $e->getFile() . chr(10) 
-										. ' ON LINE ' . $e->getLine() . chr(10) 
+				$task->setErrorMessage(	$e->getMessage() . chr(10)
+										. ' IN ' .      $e->getFile() . chr(10)
+										. ' ON LINE ' . $e->getLine() . chr(10)
 										. ' STACKSTRACE : ' .chr(10)
 										. $e->getTraceAsString());
 			}
@@ -130,17 +139,17 @@ class JobCommand extends ContainerAwareCommand
 			$em->flush();
 		}
 		$endDate = new \DateTime('now');
-		
+
 		$output->writeln('----END OF EXECUTION OF ' . count($taskToExecute) . ' TASK(S) [' . $endDate->format('Y-m-d H:i:s') . ']');
-	
+
     }
 
 	protected function createJobTasks(&$input, &$output)
 	{
 		$em = $this->getContainer()->get('doctrine')->getEntityManager('job');
-    	
+
     	$currentTime = new \DateTime(date('1970-01-01 H:i:s'));
-    	
+
 		//On cherche les taches à executer
 		$jobsToExecute = $em->getRepository('JobBundle:Job')->createQueryBuilder('j')
 							->andWhere('j.startRangeDate < :currentDate')
@@ -169,9 +178,9 @@ class JobCommand extends ContainerAwareCommand
 			$output->writeln('--------SCRIPT $scriptNamespace class do not exists.');
 			throw new \Exception("$scriptNamespace class do not exists.");
 		}
-		
+
 		$output->writeln('--------TASKS CREATION ON JOB ' . $job->getCode() . ' DATE : ' . date('Y-m-d H:i:s'));
-		
+
 		$script = new $scriptNamespace($this->getContainer());
 		$script->createTasks();
 	}
@@ -184,9 +193,9 @@ class JobCommand extends ContainerAwareCommand
 			$output->writeln('--------SCRIPT $scriptNamespace class do not exists.');
 			throw new \Exception("$scriptNamespace class do not exists.");
 		}
-		
+
 		$output->writeln('--------SCRIPT ' . $task->getJob()->getNamespace() . ' ON TASK #' . $task->getId());
-		
+
 		$script = new $scriptNamespace($this->getContainer());
 		$input  =  (array) json_decode($task->getInput());
 		$script->executeTask($input);
@@ -208,5 +217,3 @@ class JobCommand extends ContainerAwareCommand
     	$conn->query($sql);
 	}
 }
-
-?>
