@@ -198,7 +198,7 @@ class JobCommand extends ContainerAwareCommand
 
 		$script = new $scriptNamespace($this->getContainer());
 		$input  =  (array) json_decode($task->getInput());
-		$script->executeTask($input);
+		$script->executeTask($input, $scriptNamespace);
 	}
 
 	protected function incrementJobRunning($job)
