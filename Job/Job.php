@@ -13,14 +13,14 @@ abstract class Job extends ContainerAware
 
 	public function createTasks()
 	{
-		
+
 	}
 
-	public function executeTask($input)
+	public function executeTask($input, $scriptNamespace)
 	{
-		
+
 	}
-	
+
 	protected function getContainer()
 	{
 		return $this->container;
