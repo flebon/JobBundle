@@ -21,6 +21,16 @@ To install this bundle please follow the next steps:
 First add the dependencies to your `composer.json` file:
 
 ```json
+"repositories": [
+    {
+        "type": "vcs",
+        "url": "https://github.com/vvanghelue/FilterListBundle.git"
+    },
+    {
+        "type": "vcs",
+        "url": "https://github.com/Tessi-Tms/JobBundle.git"
+    }
+],
 "require": {
     ...
     "Tessi-Tms/JobBundle": "dev-master",
