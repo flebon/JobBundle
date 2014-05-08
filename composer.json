@@ -11,6 +11,12 @@
             "email": "contact@tessi.fr"
         }
     ],
+    "repositories": [
+        {
+            "type": "vcs",
+            "url": "https://github.com/vvanghelue/FilterListBundle.git"
+        }
+    ],
     "require": {
         "php": ">=5.3.3",
         "symfony/http-foundation": ">=2.1,<2.4",
