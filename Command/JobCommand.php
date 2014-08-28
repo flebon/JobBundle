@@ -12,7 +12,18 @@ use Tessi\JobBundle\Entity\Job;
 
 class JobCommand extends ContainerAwareCommand
 {
-	const MAX_TASK_PROCESS = 1;
+    private maxTaskProcess = 1;
+    
+    protected function getMaxTaskProcess()
+    {
+    	return $this->maxTaskProcess;
+    }
+    
+    public function setMaxTaskProcess($maxTaskProcess = 1)
+    {
+    	$this->maxTaskProcess = $maxTaskProcess;
+    }
+	
    /**
     * function
     */
@@ -32,7 +43,7 @@ class JobCommand extends ContainerAwareCommand
     protected function execute(InputInterface $input, OutputInterface $output)
     {
     	set_time_limit(0);
-		ini_set("memory_limit", -1);
+	ini_set("memory_limit", -1);
 
     	$this->findAndExecuteTasks($input, $output);
     	$this->createJobTasks($input, $output);
@@ -40,29 +51,29 @@ class JobCommand extends ContainerAwareCommand
 
     protected function findAndExecuteTasks(&$input, &$output)
     {
-		$em    = $this->getContainer()->get('doctrine')->getEntityManager('job');
-		$conn  = $this->getContainer()->get('doctrine.dbal.job_connection');
-		$limit = self::MAX_TASK_PROCESS;
-		$time  = date('1970-01-01 H:i:s');
+	$em    = $this->getContainer()->get('doctrine')->getEntityManager('job');
+	$conn  = $this->getContainer()->get('doctrine.dbal.job_connection');
+	$limit = $this->getMaxTaskProcess();
+	$time  = date('1970-01-01 H:i:s');
     	$sql = "
-			SELECT t.id FROM jobbundletask t
-			INNER JOIN jobbundlejob j ON j.id = t.job_id
-			WHERE t.startdate is null AND t.enddate IS NULL
-			AND j.currentRunningCount < j.maxconcurrenttasks
-			AND (
-					(
-						j.endTaskRestrictionDate > j.startTaskRestrictionDate
-					AND j.startTaskRestrictionDate < '$time'
-					AND j.endTaskRestrictionDate   > '$time'
-					)
-				OR 	(
-						j.endTaskRestrictionDate < j.startTaskRestrictionDate
-					AND NOT (	j.startTaskRestrictionDate < '$time'
-							AND j.endTaskRestrictionDate   > '$time')
-					)
+		SELECT t.id FROM jobbundletask t
+		INNER JOIN jobbundlejob j ON j.id = t.job_id
+		WHERE t.startdate is null AND t.enddate IS NULL
+		AND j.currentRunningCount < j.maxconcurrenttasks
+		AND (
+				(
+					j.endTaskRestrictionDate > j.startTaskRestrictionDate
+				AND j.startTaskRestrictionDate < '$time'
+				AND j.endTaskRestrictionDate   > '$time'
 				)
-			ORDER BY t.executiondate ASC
-			LIMIT $limit
+			OR 	(
+					j.endTaskRestrictionDate < j.startTaskRestrictionDate
+				AND NOT (	j.startTaskRestrictionDate < '$time'
+						AND j.endTaskRestrictionDate   > '$time')
+				)
+			)
+		ORDER BY t.executiondate ASC
+		LIMIT $limit
     	";
 
         $tasksIds = $conn->fetchAll($sql);
